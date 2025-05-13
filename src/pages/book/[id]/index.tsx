@@ -1,11 +1,26 @@
 import React from "react";
-import books from "@/mock/books.json";
-import { BookData } from "@/types";
 import styles from "./index.module.css";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import fetchOneBook from "@/lib/fetch-one-book";
 
-const BookDetailPage = () => {
-  const { title, subTitle, description, author, publisher, coverImgUrl } =
-    books[0] as BookData;
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const id = context.params!.id;
+  const book = await fetchOneBook(Number(id));
+  return {
+    props: { book },
+  };
+};
+
+const BookDetailPage = ({
+  book,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  if (!book) {
+    return <div>책을 찾을 수 없습니다.</div>;
+  }
+
+  const { title, subTitle, description, author, publisher, coverImgUrl } = book;
 
   return (
     <div className={styles.container}>
