@@ -3,10 +3,10 @@ import styles from "./index.module.css";
 import { ReactNode } from "react";
 import BookItem from "@/components/book-itme";
 import fetchBooks from "@/lib/fetch-books";
-import { InferGetServerSidePropsType } from "next";
+import { InferGetStaticPropsType } from "next";
 import fetchRandomBooks from "@/lib/fetch-random-books";
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const [allBooks, recoBooks] = await Promise.all([
     fetchBooks(),
     fetchRandomBooks(),
@@ -22,7 +22,7 @@ export const getServerSideProps = async () => {
 
 export default function Home({
   allBooks,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   console.log(allBooks);
   return (
     <div className={styles.container}>
