@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./index.module.css";
 import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import fetchOneBook from "@/lib/fetch-one-book";
+import { useRouter } from "next/router";
 
 export const getStaticPaths = () => {
   return {
@@ -10,13 +11,20 @@ export const getStaticPaths = () => {
       { params: { id: "2" } },
       { params: { id: "3" } },
     ],
-    fallback: false, // false or 'blocking'
+    fallback: true, // false or 'blocking'
   };
 };
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const id = context.params!.id;
   const book = await fetchOneBook(Number(id));
+
+  if (!book) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: { book },
   };
@@ -25,6 +33,12 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 const BookDetailPage = ({
   book,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
   if (!book) {
     return <div>책을 찾을 수 없습니다.</div>;
   }
